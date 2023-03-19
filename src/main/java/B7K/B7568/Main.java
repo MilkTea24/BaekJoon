@@ -3,6 +3,30 @@ package B7K.B7568;
 import java.util.*;
 
 public class Main {
+    static int[][] students;
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int N = scanner.nextInt();
+        students = new int[N][2];
+        for (int i = 0; i < N; i++) {
+            students[i][0] = scanner.nextInt();
+            students[i][1] = scanner.nextInt();
+        }
+
+        for (int i = 0; i < N; i++) {
+            int rank = 0;
+            int numberOfLargePeople = 0;
+            for (int j = 0; j < N; j++) {
+                if (students[i][0] < students[j][0] && students[i][1] < students[j][1]) numberOfLargePeople++;
+            }
+            System.out.println(numberOfLargePeople + 1);
+        }
+    }
+}
+
+
+/*
+public class Main {
     static int n;
     static Student[] students;
     public static void main(String[] args) {
@@ -70,3 +94,5 @@ public class Main {
         }
     }
 }
+*/
+
