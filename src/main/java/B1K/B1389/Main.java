@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 public class Main {
-    static boolean[][] isFriend;
+    static int[][] distance;
     static int N;
     public static void main(String[] args) {
         try {
@@ -15,13 +15,13 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
 
-        isFriend = new boolean[N][N];
+        distance = new int[N][N];
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine(), " ");
             int from = Integer.parseInt(st.nextToken()) - 1;
             int to = Integer.parseInt(st.nextToken()) - 1;
-            isFriend[from][to] = true;
-            isFriend[to][from] = true;
+            distance[from][to] = 1;
+            distance[to][from] = 1;
         }
 
         int result = minBaconPerson();
@@ -32,6 +32,48 @@ public class Main {
         }
     }
 
+    static int minBaconPerson() {
+        int sum = Integer.MAX_VALUE;
+        int minInd = 0;
+        for (int i = 0; i < N; i++) {
+            int temp = SumDistancesToStart(i);
+            if (sum > temp) {
+                minInd = i;
+                sum = temp;
+            }
+        }
+        return minInd + 1;
+    }
+
+    static int SumDistancesToStart(int start) {
+        boolean[] isVisited = new boolean[N];
+        LinkedList<Integer> visitedOrder = new LinkedList<>();
+        LinkedList<Integer> nextNode = new LinkedList<>();
+        nextNode.addLast(start);
+        isVisited[start] = true;
+
+        while (!nextNode.isEmpty()){
+            int current = nextNode.removeFirst();
+            visitedOrder.addLast(current);
+
+            for (int next = 0; next < N; next++) {
+                if (distance[current][next] == 1 && !isVisited[next]) {
+                    distance[start][next] = distance[start][visitedOrder.getLast()] + 1;
+                    nextNode.addLast(next);
+                    isVisited[next] = true;
+                }
+            }
+        }
+
+        int sum = 0;
+
+        for (int j = 0; j < N; j++) {
+            sum += distance[start][j];
+        }
+        return sum;
+    }
+
+    /*
     static int minBaconPerson() {
         int[][] baconNumbers = new int[N][N];
 
@@ -92,4 +134,5 @@ public class Main {
         }
         return Integer.MAX_VALUE;
     }
+    */
 }

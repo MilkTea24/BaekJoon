@@ -1,4 +1,4 @@
-package B10K.B11050;
+package B11K.B11050;
 
 import java.util.Scanner;
 

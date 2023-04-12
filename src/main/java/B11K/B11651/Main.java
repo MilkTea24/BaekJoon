@@ -1,4 +1,4 @@
-package B10K.B11651;
+package B11K.B11651;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
