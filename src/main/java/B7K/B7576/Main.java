@@ -1,88 +1,77 @@
 package B7K.B7576;
 
 import java.io.BufferedReader;
+import java.util.*;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public class Main {
-    static int M;
-    static int N;
-    static int[][] box;
-    static final int[][] direction = {
-            {0, 1}, {0, -1}, {1, 0}, {-1, 0}
-    };
-    public static void main(String[] args) {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            int[] MN = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-            MN[0] = M;  MN[1] = N;
+    static int M, N;
+    static Tomato[][] tomatoes;
+    static final int[][] directions = {{0, 1}, {-1, 0}, {0, -1}, {1, 0}};
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String firstLine = br.readLine();
 
-            box = new int[N][M];
-            for (int i = 0; i < N; i++) {
-                int[] line = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-                box[i] = line;
+        M = Integer.parseInt(firstLine.split(" ")[0]);
+        N = Integer.parseInt(firstLine.split(" ")[1]);
+
+        tomatoes = new Tomato[N][M];
+
+        for (int i = 0; i < N; i++) {
+            String[] line = br.readLine().split(" ");
+            for (int j = 0; j < M; j++) {
+                tomatoes[i][j] = new Tomato(i, j, Integer.parseInt(line[j]), 0);
             }
-
-            int result = BFS();
-
-
-            boolean isAllMatured = true;
-            label : for (int i = 0; i < N; i++) {
-                for (int j = 0; j < M; j++){
-                    if (box[i][j] == 0) {
-                        isAllMatured = false;
-                        break label;
-                    }
-                }
-            }
-
-            if (!isAllMatured) {
-                System.out.println(-1);
-            }
-            else System.out.println(result);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        Queue<Tomato> ripenTomatoes = new LinkedList<>();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (tomatoes[i][j].status == 1) ripenTomatoes.add(tomatoes[i][j]);
+            }
+        }
+        System.out.println(BFS(ripenTomatoes));
     }
 
-    public static int BFS() {
-        int maxMaturedTime = 0;
-        LinkedList<Tomato> queue = new LinkedList<>();
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                if (box[i][j] == 1) {
-                    queue.addLast(new Tomato(i, j, 0));
-                }
-            }
-        }
+    static int BFS(Queue<Tomato> queue) {
+        int maxDays = 0;
+
         while (!queue.isEmpty()) {
-            Tomato popTomato = queue.removeFirst();
-            maxMaturedTime = Integer.max(popTomato.maturedAt, maxMaturedTime);
-            for (int i = 0; i < 4; i++) {
-                int a = popTomato.i + direction[i][0];
-                int b = popTomato.j + direction[i][1];
+            Tomato tomato = queue.poll();
+            for (int k = 0; k < 4; k++) {
+                int newI = tomato.i + directions[k][0];
+                int newJ = tomato.j + directions[k][1];
 
-                if (a >= 0 && a < N && b >= 0 && b < M && box[a][b] == 0) {
-                    queue.addLast(new Tomato(a, b, popTomato.maturedAt + 1));
-                    box[a][b] = 1;
+                if (newI >= 0 && newI < N && newJ >= 0 && newJ < M && tomatoes[newI][newJ].status == 0) {
+                    tomatoes[newI][newJ].days = tomato.days + 1;
+                    tomatoes[newI][newJ].status = 1;
+                    queue.add(tomatoes[newI][newJ]);
+                    maxDays = Math.max(tomatoes[newI][newJ].days, maxDays);
                 }
             }
         }
 
-        return maxMaturedTime;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (tomatoes[i][j].status == 0) return -1;
+            }
+        }
+        return maxDays;
     }
 
+    static class Tomato{
+        int i;
+        int j;
+        int status;
+        int days;
 
-    static class Tomato {
-        public int i;
-        public int j;
-        public int maturedAt;
-
-        public Tomato(int i, int j, int maturedAt){
+        public Tomato(int i, int j, int status, int days) {
             this.i = i;
             this.j = j;
-            this.maturedAt = maturedAt;
+            this.status = status;
+            this.days = days;
         }
     }
+
 }

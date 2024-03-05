@@ -4,105 +4,100 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int N, M;
-    static LinkedList<Node>[] allBusInfo;
-    public static void main(String[] args) {
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            N = Integer.parseInt(br.readLine());
-            M = Integer.parseInt(br.readLine());
+    static int n;
+    static int m;
+    static List<List<Node>> nearNodeInfo = new ArrayList<>();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-            inputAllBusInfo(br);
+        n = Integer.parseInt(br.readLine());
+        m = Integer.parseInt(br.readLine());
 
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            int start = Integer.parseInt(st.nextToken())-1;    int end = Integer.parseInt(st.nextToken())-1;
-            LinkedList<Integer> dijkstraPath = new LinkedList<>();
-            int[] result = dijkstra(start, end, dijkstraPath);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(result[0] + "\n" + result[1] + "\n");
-            for (int i : dijkstraPath) {
-                sb.append(i+1).append(' ');
-            }
-
-            System.out.println(sb);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int i = 0; i < n; i++) {
+            nearNodeInfo.add(new ArrayList<>());
         }
+
+        for (int i = 0; i < m; i++) {
+            int[] line = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            int start = line[0] - 1;
+            int end = line[1] - 1;
+
+            nearNodeInfo.get(start).add(new Node(end, line[2]));
+        }
+
+        int[] line = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+        int start = line[0] - 1;
+        int end = line[1] - 1;
+
+        dijkstra(start, end);
+
+
     }
 
-    static void inputAllBusInfo(BufferedReader br) throws Exception {
-        allBusInfo = new LinkedList[N];
-        for (int i = 0; i < N; i++) {
-            allBusInfo[i] = new LinkedList<>();
-        }
+    private static void dijkstra(int start, int end) {
+        int[] result = new int[n];
+        int[] beforeIndex = new int[n];
+        Arrays.fill(beforeIndex, -1);
 
-        for (int i = 0; i < M; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            int from = Integer.parseInt(st.nextToken())-1;
-            int to = Integer.parseInt(st.nextToken())-1;
-            int width = Integer.parseInt(st.nextToken());
-            allBusInfo[from].add(new Node(to, width));
+        for (int i = 0; i < n; i++) {
+            result[i] = Integer.MAX_VALUE;
         }
-    }
-
-    static int[] dijkstra(int start, int end, LinkedList<Integer> resultPath) {
-        int isUsedEdge = 0;
-        int[] distanceFromStart = new int[N];
-        int[] prevNodeNumber = new int[N];
-        for (int i = 0; i < N; i++) {
-            distanceFromStart[i] = Integer.MAX_VALUE;
-            prevNodeNumber[i] = -1;
-        }
-        distanceFromStart[start] = 0;
-        prevNodeNumber[start] = start;
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
+        result[start] = 0;
         pq.add(new Node(start, 0));
 
         while (!pq.isEmpty()) {
             Node current = pq.poll();
 
-            if (end == current.position) break;
-            if (distanceFromStart[current.position] < current.distance) continue;
+            if (current.dist > result[current.pos]) continue;
 
-            for (int i = 0; i < allBusInfo[current.position].size(); i++) {
-                Node surroundNode = allBusInfo[current.position].get(i);
-                if (distanceFromStart[surroundNode.position] > distanceFromStart[current.position] + surroundNode.distance) {
-                    distanceFromStart[surroundNode.position] = distanceFromStart[current.position] + surroundNode.distance;
-                    pq.offer(new Node(surroundNode.position, distanceFromStart[surroundNode.position]));
-                    prevNodeNumber[surroundNode.position] = current.position;
+            List<Node> currentNearNodeInfo = nearNodeInfo.get(current.pos);
+
+            for (Node n : currentNearNodeInfo) {
+                if (n.dist + current.dist < result[n.pos]) {
+                    result[n.pos] = n.dist + current.dist;
+                    beforeIndex[n.pos] = current.pos;
+                    pq.add(new Node(n.pos, result[n.pos]));
                 }
             }
         }
 
-        int[] resultArray = new int[2];
-        resultArray[0] = distanceFromStart[end];
-
-        int goToStartInd = end;
-        while (prevNodeNumber[goToStartInd] != goToStartInd) {
-            resultPath.addFirst(goToStartInd);
-            goToStartInd = prevNodeNumber[goToStartInd];
+        int index = end;
+        int count = 1;
+        StringBuilder sb = new StringBuilder();
+        Stack<Integer> stack = new Stack<>();
+        while (beforeIndex[index] != -1) {
+            stack.add(index + 1);
+            index = beforeIndex[index];
+            count++;
         }
-        resultPath.addFirst(start);
 
-        resultArray[1] = resultPath.size();
-        return resultArray;
+        sb.append(start + 1).append(' ');
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop()).append(' ');
+        }
+
+        System.out.println(result[end]);
+        System.out.println(count);
+        System.out.println(sb);
+
     }
 
-    static class Node implements Comparable<Node> {
-        int position;
-        int distance;
+    private static class Node implements Comparable<Node> {
+        int pos;
+        int dist;
 
-        Node(int _po, int _d) {
-            position = _po;
-            distance = _d;
+        Node (int p, int d) {
+            pos = p;
+            dist = d;
         }
 
         @Override
-        public int compareTo(Node n1) {
-            return this.distance - n1.distance;
+        public int compareTo(Node n) {
+            return this.dist - n.dist;
         }
     }
 }
+
+

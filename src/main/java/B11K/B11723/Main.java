@@ -10,33 +10,33 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int n = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < n; i++) {
             String[] line = br.readLine().split(" ");
-            StringBuilder sb = new StringBuilder();
             int number = 0;
             if (line.length == 2) number = Integer.parseInt(line[1]);
-                    if (line[0].equals("add")) {
-                        set[number-1] = true;
-                    }
-                    if (line[0].equals("remove")) {
-                        set[number-1] = false;
-                    }
-                    if (line[0].equals("check")) {
-                        sb.append(set[number-1] ? 1 : 0).append("\n");
-                    }
-                    if (line[0].equals("toggle")) {
-                        set[number-1] = !set[number-1];
-                    }
-                    if (line[0].equals("all")) {
-                        for (int j = 0; j < 20; j++) {
-                            set[j] = true;
-                        }
-                    }
-                    if (line[0].equals("empty")) {
-                        set = new boolean[20];
-                    }
+            if (line[0].equals("add")) {
+                set[number-1] = true;
+            }
+            if (line[0].equals("remove")) {
+                set[number-1] = false;
+            }
+            if (line[0].equals("check")) {
+                sb.append(set[number-1] ? 1 : 0).append("\n");
+            }
+            if (line[0].equals("toggle")) {
+                set[number-1] = !set[number-1];
+            }
+            if (line[0].equals("all")) {
+                for (int j = 0; j < 20; j++) {
+                    set[j] = true;
+                }
+            }
+            if (line[0].equals("empty")) {
+                set = new boolean[20];
+            }
         }
-        System.out.print(br);
+        System.out.print(sb.toString());
     }
 }

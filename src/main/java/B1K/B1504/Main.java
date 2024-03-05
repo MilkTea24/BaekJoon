@@ -38,8 +38,8 @@ public class Main {
         if (oneToEnd != Integer.MAX_VALUE &&
                 EndToStart != Integer.MAX_VALUE &&
                 StartToN != Integer.MAX_VALUE) {
-            if (result == -1) result = oneToEnd + EndToStart + endToN;
-            else result = Math.min(result, oneToEnd + EndToStart + endToN);
+            if (result == -1) result = oneToEnd + EndToStart + StartToN;
+            else result = Math.min(result, oneToEnd + EndToStart + StartToN);
         }
 
         System.out.println(result);
@@ -61,6 +61,7 @@ public class Main {
             int len = line[2];
 
             edgeInfo.get(edgeStart).add(new Node(edgeEnd, len));
+            edgeInfo.get(edgeEnd).add(new Node(edgeStart, len));
         }
 
         line = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
@@ -83,13 +84,12 @@ public class Main {
         pq.add(new Node(start, 0));
 
         while (!pq.isEmpty()) {
+            //System.out.println(pq);
             Node current = pq.poll();
             int currentIndex = current.index;
 
             //업데이트 되지 않은 Node인지 확인
             if (current.distance > distanceFromStart[currentIndex]) continue;
-
-            //System.out.println("index: " + (currentIndex+1) + " ,distance: " + current.distance);
 
             List<Node> currentNodeEdgeInfo = edgeInfo.get(currentIndex);
             for (Node n : currentNodeEdgeInfo) {
@@ -97,7 +97,6 @@ public class Main {
                 if (distanceFromStart[n.index] > distanceFromStart[currentIndex] + n.distance) {
                     distanceFromStart[n.index] = distanceFromStart[currentIndex] + n.distance;
                     pq.add(new Node(nearNodeIndex, distanceFromStart[n.index]));
-                    //System.out.println("update index: " + (nearNodeIndex+1) + " ,distance: " + n.distance);
                 }
             }
         }
@@ -116,7 +115,12 @@ public class Main {
 
         @Override
         public int compareTo(Node n) {
-            return n.distance - this.distance;
+            return this.distance - n.distance;
+        }
+
+        @Override
+        public String toString() {
+            return index + " : " + distance;
         }
     }
 }
