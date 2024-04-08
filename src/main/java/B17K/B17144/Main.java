@@ -39,7 +39,7 @@ public class Main {
         for (int i = 0; i < T; i++) {
             spread(purifierPos);
 
-
+            /*
             for (int j = 0; j < R; j++) {
                 for (int k = 0; k < C; k++) {
                     System.out.print(map[j][k] + " ");
@@ -48,12 +48,11 @@ public class Main {
             }
 
             System.out.println();
-
-
+            */
 
             operatePurifier(purifierPos);
 
-
+            /*
             for (int j = 0; j < R; j++) {
                 for (int k = 0; k < C; k++) {
                     System.out.print(map[j][k] + " ");
@@ -62,6 +61,7 @@ public class Main {
             }
 
             System.out.println();
+             */
 
         }
 
@@ -111,52 +111,58 @@ public class Main {
     }
 
     private static void operatePurifier(int pos) {
+        //오른쪽
         int temp = map[pos][C-1];
         for (int i = C - 1; i > 1 ; i--) {
             map[pos][i] = map[pos][i-1];
         }
         map[pos][1] = 0;
 
+        //위쪽
         int temp2 = map[0][C-1];
         for (int i = 0; i < pos - 1; i++) {
             map[i][C-1] = map[i+1][C-1];
         }
         map[pos - 1][C-1] = temp;
 
-
+        //왼쪽
         temp = map[0][0];
         for (int i = 0; i < C - 2; i++) {
             map[0][i] = map[0][i + 1];
         }
         map[0][C-2] = temp2;
 
+        //아래쪽
         for (int i = pos - 1; i > 1; i--) {
             map[i][0] = map[i-1][0];
         }
-        map[0][1] = temp;
+        map[1][0] = temp;
 
+        //오른쪽
         temp = map[pos+1][C-1];
         for (int i = C-1; i > 1; i--) {
             map[pos + 1][i] = map[pos + 1][i-1];
         }
         map[pos + 1][1] = 0;
 
+        //아래쪽
         temp2 = map[R-1][C-1];
         for (int i = R-1; i > pos + 2; i--) {
             map[i][C-1] = map[i-1][C-1];
         }
         map[pos + 2][C-1] = temp;
 
-
+        //왼쪽
         temp = map[R-1][0];
         for (int i = 0; i < C-2; i++) {
             map[R-1][i] = map[R-1][i+1];
         }
-        map[R-2][C-1] = temp2;
+        map[R-1][C-2] = temp2;
 
-        map[R-2][0] = temp;
-        for (int i = pos + 2; i < R-3; i++) {
+
+        for (int i = pos + 2; i < R-1; i++) {
             map[i][0] = map[i + 1][0];
         }
+        map[R-2][0] = temp;
     }
 }
