@@ -47,38 +47,23 @@ public class Main {
 
         Collections.sort(trips);
 
+        //1. j번째 여행을 넣을 수 없으면 memo[i][j] = memo[i][j-1]
+        //2. j번째 여행을 넣을 수 있으면 memo[i][j] = Math.min((여행을 넣지 않는 선택)(memo[i-1][j] + 1), (여행을 넣었을 때)(앞뒤 간격 구하기))
         for (int i = 1; i < N + 1; i++) {
             for (int j = 1; j < M + 1; j++) {
-                System.out.println("i: " + i + ", j: " + j + " 값: " + memo[i][j][0]);
 
-                //n이 1 증가해서 j번째 여행을 넣을 수 있다면
-                //(i - 1, j) -> (i, j)
-                if (memo[i - 1][j][1] < trips.get(j-1).start && trips.get(j-1).end <= i) {
-                    if (memo[i - 1][j][0] != i - 1) {
-                        memo[i][j][0] = Math.max(memo[i - 1][j][0], (i - memo[i - 1][j][1]) - (trips.get(j - 1).end - trips.get(j - 1).start + 1));
-                    }
-                    else memo[i][j][0] = (i - memo[i - 1][j][1]) - (trips.get(j - 1).end - trips.get(j - 1).start + 1);
-                    memo[i][j][1] = trips.get(j-1).end;
-                    System.out.println("갱신: " + memo[i][j][0]);
+                if (memo[i - 1][j][1] >= trips.get(j-1).start || trips.get(j-1).end > i){
+                    memo[i][j][0] = memo[i][j-1][0];
                 }
-                //넣을 수 없다면 간격 1 증가
                 else {
-                    memo[i][j][0] = Math.max(memo[i - 1][j][0], i - memo[i - 1][j][1]);
-                }
-
-                //m이 1 증가해서 다음 여행을 넣을 수 있다면
-                //(i, j - 1) -> (i, j)
-                if (memo[i][j - 1][1] < trips.get(j-1).start && trips.get(j-1).end <= i) {
-                    //앞서 택한 계산한 결과보다 더 작은 값을 구할 수 있다면
-                    if (memo[i][j][0] > (i - memo[i][j - 1][1]) - (trips.get(j-1).end - trips.get(j-1).start + 1)) {
-                        memo[i][j][0] = (i - memo[i][j - 1][1]) - (trips.get(j-1).end - trips.get(j-1).start + 1);
+                    memo[i][j][0] = Math.min(Math.max(memo[i-1][j][0], i - memo[i-1][j][1]),
+                            Math.max(trips.get(j-1).start - memo[i-1][j][1] - 1,
+                                    i - trips.get(j-1).end));
+                    if (Math.max(memo[i-1][j][0], i - memo[i-1][j][1]) > Math.max(trips.get(j-1).start - memo[i-1][j][1] - 1,
+                            i - trips.get(j-1).end)) {
                         memo[i][j][1] = trips.get(j-1).end;
-                        System.out.println("두번째 갱신: " + memo[i][j][0]);
                     }
-                } else {
-                    memo[i][j][0] = Math.min(memo[i][j][0], memo[i][j - 1][0]);
                 }
-                System.out.println("최종값: " + memo[i][j][0]);
             }
         }
 
