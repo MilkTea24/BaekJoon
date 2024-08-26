@@ -18,6 +18,5 @@ public class Main {
         int minLen = Math.min(music1.length(), Math.min(music2.length(), music3.length()));
 
         int[][][] dp = new int[music1.length() + 1][music2.length() + 1][music3.length() + 1];
-        dp
     }
 }
